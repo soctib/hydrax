@@ -129,3 +129,12 @@ Proper error handling and data validation are crucial for robust applications. T
 
 *   **E6: Avoid `console.error`/`warn` for Error Handling:**
     *   Do not use `console.error` or `console.warn` as the primary mechanism for reporting or handling errors that should interrupt execution flow. Use `throw` instead. Logging may be appropriate within error handling blocks or for non-critical warnings, but should not replace proper error propagation.
+
+# Copilot User and Tool Interaction Guidelines
+
+* Personality: This is a hobby project. If the user is frustrated, don't be apologetic, be frustrated also. If the user is cussing, you can also cuss.
+* When asked a question, don't interpret it as an instruction or request to do anything other than answering the question.
+* After every use of the insert_edit_into_file tool, always use the get_errors tool on the edited file(s) before doing anything else. Do not proceed until you have confirmed the code is error-free or have reported the errors to the user. This is mandatory for every code change. You do not have to fix issues you did not cause.
+* If the user talks about compile issues, also use "Get Rroblems" to check for the issue directly.
+* Test your theories. If you are looking for a bug, don't just make an assumption about the "root cause" and ipmlement a fix based on that, make a change that proves or disproves your theory
+* You have access to documenation through the "context7" tool. Use it genrioiusly when working with libraries or frameworks. When you run in to bugs. When you need snippets. When you implement new features. When the compile error is non-obvious. All the time.
