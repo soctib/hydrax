@@ -3,34 +3,25 @@ import './App.css'
 import MainScreen from "./MainScreen";
 import { SettingsScreen } from "./SettingsScreen";
 
-// Simple tab types
 export type TabType = 'main' | 'settings';
 
-function App() {
+export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('main');
 
-  // Handle deep linking
   useEffect(() => {
-    // Get tab from URL hash
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
       if (hash === 'settings') {
         setActiveTab('settings');
       } else {
-        // Default to main for any other hash or no hash
         setActiveTab('main');
       }
     };
-
-    // Set initial tab based on URL
     handleHashChange();
-
-    // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Update URL when tab changes
   useEffect(() => {
     window.location.hash = activeTab;
   }, [activeTab]);
@@ -53,7 +44,6 @@ function App() {
           </button>
         </div>
       </nav>
-
       <div className="tab-content">
         <div className="content-container">
           {activeTab === 'main' && <MainScreen />}
@@ -63,5 +53,3 @@ function App() {
     </div>
   )
 }
-
-export default App

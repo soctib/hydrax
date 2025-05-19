@@ -1,3 +1,8 @@
+/* Ensure all elements include padding and border in width calculations */
+* {
+  box-sizing: border-box;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,23 +10,10 @@
   color: #e0e0e0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 body {
   background-color: #121212;
   color: #e0e0e0;
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #aaa;
+  overflow-x: hidden;
 }
 
 /* Tab Navigation */
@@ -31,16 +23,16 @@ body {
   height: 100vh;
   background-color: #121212;
   color: #e0e0e0;
-  width: 100%;
-  max-width: 100%;
+  width: 100vw;
+  max-width: 100vw;
 }
 
 .tab-navigation {
   display: flex;
   border-bottom: 1px solid #444;
   background-color: #202020;
-  width: 100%;
-  max-width: 100%;
+  width: 100vw;
+  max-width: 100vw;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -48,8 +40,8 @@ body {
 
 .tab-buttons-container {
   display: flex;
-  width: 1280px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 16px;
 }
@@ -80,7 +72,8 @@ body {
   overflow-y: auto;
   padding: 16px 0;
   background-color: #1a1a1a;
-  width: 100%;
+  width: 100vw;
+  max-width: 100vw;
 }
 
 .content-container {
@@ -88,14 +81,17 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: 0 16px;
+  box-sizing: border-box;
 }
 
 /* Settings Screen */
 .settings-container {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   text-align: left;
   color: #e0e0e0;
+  box-sizing: border-box;
 }
 
 .settings-section {
@@ -125,6 +121,7 @@ body {
 .chat-container {
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Chat Styles */
@@ -135,6 +132,7 @@ body {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
