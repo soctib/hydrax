@@ -37,7 +37,7 @@ export function SettingsScreen() {
               placeholder="Enter your API key"
               style={{ flex: 1 }}
             />
-            <button onClick={handleSaveApiKey} className="sendButton padding-x-xl">
+            <button onClick={handleSaveApiKey} className="defaultButton padding-x-xl">
               Save API Key
             </button>
           </div>
