@@ -12,6 +12,7 @@ const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['chat'], // only persist chat slice
+  blacklist: ['isRunning'], // do not persist isRunning
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

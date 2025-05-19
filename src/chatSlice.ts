@@ -8,10 +8,16 @@ export type ChatMessage = {
 
 export type ChatState = {
   messages: ChatMessage[];
+  isRunning: boolean;
+  apiKey: string;
+  input: string;
 };
 
 const initialState: ChatState = {
   messages: [],
+  isRunning: false,
+  apiKey: localStorage.getItem("hydrax.api.key") || "",
+  input: "",
 };
 
 const chatSlice = createSlice({
@@ -27,8 +33,17 @@ const chatSlice = createSlice({
     clearMessages(state) {
       state.messages = [];
     },
+    setIsRunning(state, action: PayloadAction<boolean>) {
+      state.isRunning = action.payload;
+    },
+    setApiKey(state, action: PayloadAction<string>) {
+      state.apiKey = action.payload;
+    },
+    setInput(state, action: PayloadAction<string>) {
+      state.input = action.payload;
+    },
   },
 });
 
-export const { addMessage, setMessages, clearMessages } = chatSlice.actions;
+export const { addMessage, setMessages, clearMessages, setIsRunning, setApiKey, setInput } = chatSlice.actions;
 export default chatSlice.reducer;

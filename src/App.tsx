@@ -6,7 +6,11 @@ import { SettingsScreen } from "./SettingsScreen";
 export type TabType = 'main' | 'settings';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('main');
+  const getInitialTab = (): TabType => {
+    const hash = window.location.hash.slice(1);
+    return hash === 'settings' ? 'settings' : 'main';
+  };
+  const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -17,7 +21,6 @@ export default function App() {
         setActiveTab('main');
       }
     };
-    handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
@@ -27,25 +30,37 @@ export default function App() {
   }, [activeTab]);
 
   return (
-    <div className="app-container">
-      <nav className="tab-navigation">
-        <div className="tab-buttons-container">
+    <div
+      className="app-container"
+      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+    >
+      <nav
+        className="tab-navigation padding-b-md"
+        style={{ display: "flex", width: "100vw", maxWidth: "100vw", position: "sticky", top: 0, zIndex: 1 }}
+      >
+        <div
+          className="tab-buttons-container padding-x-xl margin-x-auto"
+          style={{ display: "flex", width: "100%" }}
+        >
           <button
-            className={`tab-button ${activeTab === 'main' ? 'active' : ''}`}
+            className={`tab-button padding-lg padding-x-xl${activeTab === 'main' ? ' active' : ''}`}
             onClick={() => setActiveTab('main')}
           >
             Chat
           </button>
           <button
-            className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
+            className={`tab-button padding-lg padding-x-xl${activeTab === 'settings' ? ' active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
             Settings
           </button>
         </div>
       </nav>
-      <div className="tab-content">
-        <div className="content-container">
+      <div
+        className="tab-content padding-y-xl"
+        style={{ flex: 1, overflowY: "auto", width: "100vw", maxWidth: "100vw" }}
+      >
+        <div className="content-container padding-x-xl margin-x-auto">
           {activeTab === 'main' && <MainScreen />}
           {activeTab === 'settings' && <SettingsScreen />}
         </div>
