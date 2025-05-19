@@ -6,7 +6,7 @@ export function SettingsScreen() {
 
   const handleSaveApiKey = () => {
     if (apiKeyInput.trim()) {
-      localStorage.setItem("openai_api_key", apiKeyInput);
+      localStorage.setItem("hydrax.api.key", apiKeyInput);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     }

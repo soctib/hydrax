@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from './store';
+import { addMessage } from './chatSlice';
+import type { ChatMessage } from './chatSlice';
 
 export default function MainScreen() {
   const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-  const [apiKey, setApiKey] = useState(localStorage.getItem("openai_api_key") || "");
+  const [apiKey, setApiKey] = useState(localStorage.getItem("hydrax.api.key") || "");
   const [input, setInput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [messages, setMessages] = useState<
-    { id: string; role: "user" | "assistant" | "system"; content: { type: "text"; text: string }[] }[]
-  >([]);
+  const messages = useSelector((state: RootState) => (state.chat as import('./chatSlice').ChatState).messages) as ChatMessage[];
+  const dispatch = useDispatch();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export default function MainScreen() {
   const sendMessage = async () => {
     if (!input.trim() || isRunning) return;
     const userMsg = { id: `${Date.now()}-user`, role: "user" as const, content: [{ type: "text" as const, text: input.trim() }] };
-    setMessages(prev => [...prev, userMsg]);
+    dispatch(addMessage(userMsg));
     setInput("");
     setIsRunning(true);
     try {
@@ -54,7 +57,7 @@ export default function MainScreen() {
             text: "No API key is configured. Please go to Settings to add your OpenAI API key."
           }]
         };
-        setMessages(prev => [...prev, systemMsg]);
+        dispatch(addMessage(systemMsg));
         return;
       }
 
@@ -72,7 +75,7 @@ export default function MainScreen() {
       });
       const data = await response.json();
       const assistantMsg = { id: `${Date.now()}-assistant`, role: "assistant" as const, content: [{ type: "text" as const, text: data.choices[0].message.content }] };
-      setMessages(prev => [...prev, assistantMsg]);
+      dispatch(addMessage(assistantMsg));
     } catch (error) {
       // Handle API errors
       const errorMsg = {
@@ -83,7 +86,7 @@ export default function MainScreen() {
           text: `Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`
         }]
       };
-      setMessages(prev => [...prev, errorMsg]);
+      dispatch(addMessage(errorMsg));
     } finally {
       setIsRunning(false);
     }
@@ -100,7 +103,7 @@ export default function MainScreen() {
                 : "No messages yet. Type below to start a conversation."}
             </div>
           )}
-          {messages.map(msg => (
+          {messages.map((msg: ChatMessage) => (
             <div key={msg.id} className="messageItem" style={{ textAlign: msg.role === "user" ? "right" : "left" }}>
               <b>{msg.role === "user" ? "You" : "Assistant"}:</b> {msg.content.map((c, i) => <span key={i}>{c.text}</span>)}
             </div>
