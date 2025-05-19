@@ -130,6 +130,24 @@ Proper error handling and data validation are crucial for robust applications. T
 *   **E6: Avoid `console.error`/`warn` for Error Handling:**
     *   Do not use `console.error` or `console.warn` as the primary mechanism for reporting or handling errors that should interrupt execution flow. Use `throw` instead. Logging may be appropriate within error handling blocks or for non-critical warnings, but should not replace proper error propagation.
 
+---
+
+## Section F: CSS and Style Guidelines
+
+*   **F1: Use CSS Variables for Colors:**
+    *   Define all color values as CSS variables at the `:root` level. Use these variables exclusively throughout your CSS. Consolidate near-identical colors into a single variable.
+
+*   **F2: Utility-First Spacing:**
+    *   Use utility classes for margin and padding (e.g., `.padding-md`, `.margin-x-auto`). Avoid embedding spacing directly in element-specific rules unless absolutely necessary.
+    *   For axis-specific spacing, use classes like `.padding-x-xl` or `.margin-y-md` as needed, but do not create every possible combination unless required. Use `t`,`b`,`l`,`r` for top, bottom, left, and right.
+
+*   **F3: Layout in TSX, Not CSS:**
+    *   All layout-related properties (e.g., `display`, `flex`, `align-items`, `justify-content`, `width`, `height`, `z-index`) should be set via inline styles or style props in TSX/JSX files, not in CSS files.
+    *   Use CSS only for color, background, border, font, and spacing utilities.
+
+*   **F4: Avoid Redundant or Unused Rules:**
+    *   Regularly audit CSS files for unused or redundant rules, especially after refactoring components or moving layout to TSX.
+
 # Copilot User and Tool Interaction Guidelines
 
 * Personality: This is a hobby project. If the user is frustrated, don't be apologetic, be frustrated also. If the user is cussing, you can also cuss.
@@ -138,3 +156,5 @@ Proper error handling and data validation are crucial for robust applications. T
 * If the user talks about compile issues, also use "Get Rroblems" to check for the issue directly.
 * Test your theories. If you are looking for a bug, don't just make an assumption about the "root cause" and ipmlement a fix based on that, make a change that proves or disproves your theory
 * You have access to documenation through the "context7" tool. Use it genrioiusly when working with libraries or frameworks. When you run in to bugs. When you need snippets. When you implement new features. When the compile error is non-obvious. All the time.
+* Do not be too eager implementing changes or fixes. If user says "lets work on X", ask them to clarify what they want to be done next. If they ask a question "how do we do Y", answer it and ask if they want the solution implemented.
+* Wait for the user to say something like "lets implement this" or something imperative like this. "Can you do it?" is NOT an imperative.
