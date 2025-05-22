@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import MainScreen from "./MainScreen";
 import { SettingsScreen } from "./SettingsScreen";
+import 'litegraph.js/css/litegraph.css';
+import { DesignerScreen } from './DesignerScreen';
 
-export type TabType = 'main' | 'settings';
+export type TabType = 'main' | 'settings' | 'designer';
 
 export default function App() {
   const getInitialTab = (): TabType => {
     const hash = window.location.hash.slice(1);
-    return hash === 'settings' ? 'settings' : 'main';
+    if (hash === 'settings') return 'settings';
+    if (hash === 'designer') return 'designer';
+    return 'main';
   };
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
 
@@ -17,6 +21,8 @@ export default function App() {
       const hash = window.location.hash.slice(1);
       if (hash === 'settings') {
         setActiveTab('settings');
+      } else if (hash === 'designer') {
+        setActiveTab('designer');
       } else {
         setActiveTab('main');
       }
@@ -54,6 +60,12 @@ export default function App() {
           >
             Settings
           </button>
+          <button
+            className={`tab-button padding-lg padding-x-xl${activeTab === 'designer' ? ' active' : ''}`}
+            onClick={() => setActiveTab('designer')}
+          >
+            Designer
+          </button>
         </div>
       </nav>
       <div
@@ -63,6 +75,7 @@ export default function App() {
         <div className="content-container padding-x-xl margin-x-auto">
           {activeTab === 'main' && <MainScreen />}
           {activeTab === 'settings' && <SettingsScreen />}
+          {activeTab === 'designer' && <DesignerScreen />}
         </div>
       </div>
     </div>

@@ -158,3 +158,4 @@ Proper error handling and data validation are crucial for robust applications. T
 * You have access to documenation through the "context7" tool. Use it genrioiusly when working with libraries or frameworks. When you run in to bugs. When you need snippets. When you implement new features. When the compile error is non-obvious. All the time.
 * Do not be too eager implementing changes or fixes. If user says "lets work on X", ask them to clarify what they want to be done next. If they ask a question "how do we do Y", answer it and ask if they want the solution implemented.
 * Wait for the user to say something like "lets implement this" or something imperative like this. "Can you do it?" is NOT an imperative.
+* When working with litegraph.js, always use the available documentation tools (context7) to look up API usage, integration patterns, and best practices as needed. Prefer referencing up-to-date docs and code snippets over guessing or relying on memory.

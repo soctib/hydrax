@@ -1,17 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import chatReducer from './chatSlice.ts';
+import designerReducer from './designerSlice';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
+import logger from 'redux-logger';
 
 const rootReducer = combineReducers({
   chat: chatReducer,
+  designer: designerReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['chat'], // only persist chat slice
+  whitelist: ['chat', 'designer'], // persist chat and designer slices
   blacklist: ['isRunning'], // do not persist isRunning
 };
 
@@ -24,7 +27,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(logger),
 });
 
 export const persistor = persistStore(store);
