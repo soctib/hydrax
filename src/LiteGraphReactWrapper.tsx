@@ -1,12 +1,12 @@
-import { LiteGraph, LGraphCanvas } from 'litegraph.js';
+import { LiteGraph, LGraphCanvas, LGraph } from 'litegraph.js';
 import { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from './store';
+import type { RootState, AppDispatch } from './store';
 import { setOffset, setScale, setDesignerState } from './designerSlice';
 
 export function LiteGraphReactWrapper() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const offset = useSelector((state: RootState) => state.designer.offset);
   const scale = useSelector((state: RootState) => state.designer.scale);
   useLiteGraphCanvas(canvasRef as React.RefObject<HTMLCanvasElement>, offset, scale, dispatch);
@@ -40,9 +40,10 @@ function useLiteGraphCanvas(
   canvasRef: React.RefObject<HTMLCanvasElement>,
   offset: { x: number; y: number },
   scale: number,
-  dispatch: any
+  dispatch: AppDispatch
 ) {
   useEffect(() => {
+    const canvas = canvasRef.current;
     const graph = new LiteGraph.LGraph();
     let graphCanvas: LGraphCanvas | null = null;
     let lastOffset: [number, number] = [offset.x, offset.y];
@@ -50,16 +51,16 @@ function useLiteGraphCanvas(
     let isDragging = false;
 
     function resizeCanvas() {
-      if (canvasRef.current) {
-        const parent = canvasRef.current.parentElement;
+      if (canvas) {
+        const parent = canvas.parentElement;
         if (parent) {
           const dpr = window.devicePixelRatio || 1;
           const width = parent.clientWidth;
           const height = parent.clientHeight;
-          canvasRef.current.width = width * dpr;
-          canvasRef.current.height = height * dpr;
-          canvasRef.current.style.width = width + 'px';
-          canvasRef.current.style.height = height + 'px';
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          canvas.style.width = width + 'px';
+          canvas.style.height = height + 'px';
           if (graphCanvas) {
             graphCanvas.resize();
           }
@@ -104,17 +105,16 @@ function useLiteGraphCanvas(
       handlePanZoomChange();
     }
 
-    if (canvasRef.current) {
-      graphCanvas = new LGraphCanvas(canvasRef.current, graph);
+    if (canvas) {
+      graphCanvas = new LGraphCanvas(canvas, graph);
       // Restore pan/zoom from Redux
       graphCanvas.ds.offset = [offset.x, offset.y];
       graphCanvas.ds.scale = scale;
       // Listen for pan/zoom changes
-      const canvasElem = canvasRef.current;
-      canvasElem.addEventListener('mousedown', onMouseDown);
-      canvasElem.addEventListener('mousemove', onMouseMove);
-      canvasElem.addEventListener('mouseup', onMouseUp);
-      canvasElem.addEventListener('wheel', onWheel);
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('wheel', onWheel);
       // Add demo nodes
       addDemoNodes(graph);
       graph.start();
@@ -124,11 +124,11 @@ function useLiteGraphCanvas(
     return () => {
       if (graph && typeof graph.stop === 'function') graph.stop();
       window.removeEventListener('resize', resizeCanvas);
-      if (canvasRef.current) {
-        canvasRef.current.removeEventListener('mousedown', onMouseDown);
-        canvasRef.current.removeEventListener('mousemove', onMouseMove);
-        canvasRef.current.removeEventListener('mouseup', onMouseUp);
-        canvasRef.current.removeEventListener('wheel', onWheel);
+      if (canvas) {
+        canvas.removeEventListener('mousedown', onMouseDown);
+        canvas.removeEventListener('mousemove', onMouseMove);
+        canvas.removeEventListener('mouseup', onMouseUp);
+        canvas.removeEventListener('wheel', onWheel);
       }
       // Save pan/zoom to Redux on unmount
       if (graphCanvas) {
@@ -139,11 +139,11 @@ function useLiteGraphCanvas(
   }, [canvasRef, offset.x, offset.y, scale, dispatch]);
 }
 
-function addDemoNodes(graph: any) {
+function addDemoNodes(graph: LGraph) {
   const nodeConst = LiteGraph.createNode('basic/const');
   nodeConst.pos = [200, 200];
   graph.add(nodeConst);
-  // @ts-ignore: setValue exists on const node
+  // @ts-expect-error: setValue exists on const node
   nodeConst.setValue(4.5);
   const nodeWatch = LiteGraph.createNode('basic/watch');
   nodeWatch.pos = [700, 200];
