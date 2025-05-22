@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from './store';
 import { setOffset, setScale, setDesignerState } from './designerSlice';
 
-
 export function LiteGraphReactWrapper() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch();
@@ -12,15 +11,36 @@ export function LiteGraphReactWrapper() {
   const scale = useSelector((state: RootState) => state.designer.scale);
   useLiteGraphCanvas(canvasRef as React.RefObject<HTMLCanvasElement>, offset, scale, dispatch);
   return (
-    <div style={{ width: '100%', height: 600, background: '#181818', borderRadius: 8, border: '1px solid var(--color-border)', position: 'relative' }}>
-      <canvas ref={canvasRef} width={1024} height={600} style={{ width: '100%', height: '100%', display: 'block', borderRadius: 8 }} />
+    <div
+      style={{
+        width: '100%',
+        height: 600,
+        background: '#181818',
+        borderRadius: 8,
+        border: '1px solid var(--color-border)',
+        position: 'relative',
+      }}
+    >
+      <canvas
+        ref={canvasRef}
+        width={1024}
+        height={600}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          borderRadius: 8,
+        }}
+      />
     </div>
   );
 }
 
 function useLiteGraphCanvas(
-  canvasRef : React.RefObject<HTMLCanvasElement>,
-  offset: {x: number, y: number}, scale: number, dispatch: any
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  offset: { x: number; y: number },
+  scale: number,
+  dispatch: any
 ) {
   useEffect(() => {
     const graph = new LiteGraph.LGraph();
@@ -120,12 +140,12 @@ function useLiteGraphCanvas(
 }
 
 function addDemoNodes(graph: any) {
-  const nodeConst = LiteGraph.createNode("basic/const");
+  const nodeConst = LiteGraph.createNode('basic/const');
   nodeConst.pos = [200, 200];
   graph.add(nodeConst);
   // @ts-ignore: setValue exists on const node
   nodeConst.setValue(4.5);
-  const nodeWatch = LiteGraph.createNode("basic/watch");
+  const nodeWatch = LiteGraph.createNode('basic/watch');
   nodeWatch.pos = [700, 200];
   graph.add(nodeWatch);
   nodeConst.connect(0, nodeWatch, 0);

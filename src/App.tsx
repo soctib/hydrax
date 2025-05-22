@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import MainScreen from "./MainScreen";
-import { SettingsScreen } from "./SettingsScreen";
+import { useEffect, useState } from 'react';
+import './App.css';
+import MainScreen from './MainScreen';
+import { SettingsScreen } from './SettingsScreen';
 import 'litegraph.js/css/litegraph.css';
 import { DesignerScreen } from './DesignerScreen';
 
@@ -38,15 +38,22 @@ export default function App() {
   return (
     <div
       className="app-container"
-      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+      style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
     >
       <nav
         className="tab-navigation padding-b-md"
-        style={{ display: "flex", width: "100vw", maxWidth: "100vw", position: "sticky", top: 0, zIndex: 1 }}
+        style={{
+          display: 'flex',
+          width: '100vw',
+          maxWidth: '100vw',
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+        }}
       >
         <div
           className="tab-buttons-container padding-x-xl margin-x-auto"
-          style={{ display: "flex", width: "100%" }}
+          style={{ display: 'flex', width: '100%' }}
         >
           <button
             className={`tab-button padding-lg padding-x-xl${activeTab === 'main' ? ' active' : ''}`}
@@ -70,7 +77,12 @@ export default function App() {
       </nav>
       <div
         className="tab-content padding-y-xl"
-        style={{ flex: 1, overflowY: "auto", width: "100vw", maxWidth: "100vw" }}
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          width: '100vw',
+          maxWidth: '100vw',
+        }}
       >
         <div className="content-container padding-x-xl margin-x-auto">
           {activeTab === 'main' && <MainScreen />}
@@ -79,5 +91,5 @@ export default function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
