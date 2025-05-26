@@ -1,15 +1,31 @@
-import { LiteGraph, LGraphCanvas, LGraph } from 'litegraph.js';
+import { LGraph, LGraphCanvas } from 'litegraph.js';
 import { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
 import { setOffset, setScale, setDesignerState } from './designerSlice';
+import { initDesignerGraph } from './initDesignerGraph';
+import { useDesignerGraph } from './DesignerGraphContext';
+import { useProjectStorage } from './ProjectStorageContext';
 
 export function LiteGraphReactWrapper() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const graphCanvasRef = useRef<LGraphCanvas | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const offset = useSelector((state: RootState) => state.designer.offset);
   const scale = useSelector((state: RootState) => state.designer.scale);
-  useLiteGraphCanvas(canvasRef as React.RefObject<HTMLCanvasElement>, offset, scale, dispatch);
+  const activeProjectId = useSelector((state: RootState) => state.designer.activeProjectId);
+  const graph = useDesignerGraph();
+  const projectStorage = useProjectStorage();
+  // Only get serializedGraph for the current project when switching projects
+  useLiteGraphCanvas({
+    canvasRef: canvasRef as React.RefObject<HTMLCanvasElement>,
+    dispatch,
+    graph,
+    activeProjectId,
+    projectStorage,
+    graphCanvasRef,
+  });
+  useSyncPanZoom(graphCanvasRef, offset, scale);
   return (
     <div
       style={{
@@ -36,20 +52,28 @@ export function LiteGraphReactWrapper() {
   );
 }
 
-function useLiteGraphCanvas(
-  canvasRef: React.RefObject<HTMLCanvasElement>,
-  offset: { x: number; y: number },
-  scale: number,
-  dispatch: AppDispatch
-) {
+type UseLiteGraphCanvasOpts = {
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+  dispatch: AppDispatch;
+  graph: LGraph | null;
+  activeProjectId: string | null;
+  projectStorage: ReturnType<typeof useProjectStorage>;
+  graphCanvasRef: React.MutableRefObject<LGraphCanvas | null>;
+};
+
+// useLiteGraphCanvas: initializes the canvas and graph only when project changes
+function useLiteGraphCanvas({
+  canvasRef,
+  dispatch,
+  graph,
+  activeProjectId,
+  projectStorage,
+  graphCanvasRef,
+}: UseLiteGraphCanvasOpts) {
   useEffect(() => {
     const canvas = canvasRef.current;
-    const graph = new LiteGraph.LGraph();
     let graphCanvas: LGraphCanvas | null = null;
-    let lastOffset: [number, number] = [offset.x, offset.y];
-    let lastScale: number = scale;
     let isDragging = false;
-
     function resizeCanvas() {
       if (canvas) {
         const parent = canvas.parentElement;
@@ -67,56 +91,43 @@ function useLiteGraphCanvas(
         }
       }
     }
-
     function handlePanZoomChange() {
       if (!graphCanvas) return;
       const [x, y] = graphCanvas.ds.offset;
       const s = graphCanvas.ds.scale;
-      if (x !== lastOffset[0] || y !== lastOffset[1]) {
-        dispatch(setOffset({ x, y }));
-        lastOffset = [x, y];
-      }
-      if (s !== lastScale) {
-        dispatch(setScale(s));
-        lastScale = s;
-      }
+      dispatch(setOffset({ x, y }));
+      dispatch(setScale(s));
     }
-
     function onMouseDown() {
       if (graphCanvas && graphCanvas.dragging_canvas) {
         isDragging = true;
       }
     }
-
     function onMouseMove() {
       if (isDragging) {
         handlePanZoomChange();
       }
     }
-
     function onMouseUp() {
       if (isDragging) {
         handlePanZoomChange();
         isDragging = false;
       }
     }
-
     function onWheel() {
       handlePanZoomChange();
     }
-
-    if (canvas) {
+    if (canvas && graph && activeProjectId) {
       graphCanvas = new LGraphCanvas(canvas, graph);
-      // Restore pan/zoom from Redux
-      graphCanvas.ds.offset = [offset.x, offset.y];
-      graphCanvas.ds.scale = scale;
-      // Listen for pan/zoom changes
+      graphCanvasRef.current = graphCanvas;
+      // Listeners for pan/zoom changes
       canvas.addEventListener('mousedown', onMouseDown);
       canvas.addEventListener('mousemove', onMouseMove);
       canvas.addEventListener('mouseup', onMouseUp);
       canvas.addEventListener('wheel', onWheel);
-      // Add demo nodes
-      addDemoNodes(graph);
+      // Only initialize graph when project changes
+      const serializedGraph = projectStorage.get(activeProjectId)?.graph;
+      initDesignerGraph(graph, serializedGraph);
       graph.start();
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
@@ -135,18 +146,28 @@ function useLiteGraphCanvas(
         const [x, y] = graphCanvas.ds.offset;
         dispatch(setDesignerState({ offset: { x, y }, scale: graphCanvas.ds.scale }));
       }
+      graphCanvasRef.current = null;
     };
-  }, [canvasRef, offset.x, offset.y, scale, dispatch]);
+  }, [canvasRef, dispatch, graph, activeProjectId, projectStorage, graphCanvasRef]);
 }
 
-function addDemoNodes(graph: LGraph) {
-  const nodeConst = LiteGraph.createNode('basic/const');
-  nodeConst.pos = [200, 200];
-  graph.add(nodeConst);
-  // @ts-expect-error: setValue exists on const node
-  nodeConst.setValue(4.5);
-  const nodeWatch = LiteGraph.createNode('basic/watch');
-  nodeWatch.pos = [700, 200];
-  graph.add(nodeWatch);
-  nodeConst.connect(0, nodeWatch, 0);
+// useSyncPanZoom: keeps the canvas pan/zoom in sync with Redux state
+function useSyncPanZoom(
+  graphCanvasRef: React.MutableRefObject<LGraphCanvas | null>,
+  offset: { x: number; y: number },
+  scale: number
+) {
+  useEffect(() => {
+    const graphCanvas = graphCanvasRef.current;
+    if (graphCanvas) {
+      if (graphCanvas.ds.offset[0] !== offset.x || graphCanvas.ds.offset[1] !== offset.y) {
+        console.log(graphCanvas.ds.offset[0], offset.x, graphCanvas.ds.offset[1], offset.y);
+        graphCanvas.ds.offset = [offset.x, offset.y];
+      }
+      if (graphCanvas.ds.scale !== scale) {
+        graphCanvas.ds.scale = scale;
+        console.log(graphCanvas.ds.scale, scale);
+      }
+    }
+  }, [graphCanvasRef, offset.x, offset.y, scale]);
 }

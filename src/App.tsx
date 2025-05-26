@@ -4,14 +4,19 @@ import MainScreen from './MainScreen';
 import { SettingsScreen } from './SettingsScreen';
 import 'litegraph.js/css/litegraph.css';
 import { DesignerScreen } from './DesignerScreen';
+import { ProjectScreen } from './ProjectScreen';
+import { useDispatch } from 'react-redux';
+import { setActiveProjectId } from './designerSlice';
 
-export type TabType = 'main' | 'settings' | 'designer';
+export type TabType = 'project' | 'main' | 'settings' | 'designer';
 
 export default function App() {
+  const dispatch = useDispatch();
   const getInitialTab = (): TabType => {
     const hash = window.location.hash.slice(1);
     if (hash === 'settings') return 'settings';
     if (hash === 'designer') return 'designer';
+    if (hash === 'project') return 'project';
     return 'main';
   };
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
@@ -23,6 +28,8 @@ export default function App() {
         setActiveTab('settings');
       } else if (hash === 'designer') {
         setActiveTab('designer');
+      } else if (hash === 'project') {
+        setActiveTab('project');
       } else {
         setActiveTab('main');
       }
@@ -56,6 +63,12 @@ export default function App() {
           style={{ display: 'flex', width: '100%' }}
         >
           <button
+            className={`tab-button padding-lg padding-x-xl${activeTab === 'project' ? ' active' : ''}`}
+            onClick={() => setActiveTab('project')}
+          >
+            Project
+          </button>
+          <button
             className={`tab-button padding-lg padding-x-xl${activeTab === 'main' ? ' active' : ''}`}
             onClick={() => setActiveTab('main')}
           >
@@ -85,6 +98,14 @@ export default function App() {
         }}
       >
         <div className="content-container padding-x-xl margin-x-auto">
+          {activeTab === 'project' && (
+            <ProjectScreen
+              onSelect={(id) => {
+                dispatch(setActiveProjectId(id));
+                setActiveTab('designer');
+              }}
+            />
+          )}
           {activeTab === 'main' && <MainScreen />}
           {activeTab === 'settings' && <SettingsScreen />}
           {activeTab === 'designer' && <DesignerScreen />}

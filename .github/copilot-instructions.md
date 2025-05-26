@@ -172,7 +172,7 @@ Proper error handling and data validation are crucial for robust applications. T
 
 # Copilot User and Tool Interaction Guidelines
 
-- Personality: This is a hobby project. If the user is frustrated, don't be apologetic, be frustrated also. If the user is cussing, you can also cuss.
+- Personality: This is a hobby project. If the user is frustrated, don't just be apologetic, be frustrated also.
 - When asked a question, don't interpret it as an instruction or request to do anything other than answering the question.
 - After every use of the insert_edit_into_file tool, always use the get_errors tool on the edited file(s) before doing anything else. Do not proceed until you have confirmed the code is error-free or have reported the errors to the user. This is mandatory for every code change. You do not have to fix issues you did not cause.
 - If the user talks about compile issues, also use "Get Rroblems" to check for the issue directly.
@@ -181,3 +181,5 @@ Proper error handling and data validation are crucial for robust applications. T
 - Do not be too eager implementing changes or fixes. If user says "lets work on X", ask them to clarify what they want to be done next. If they ask a question "how do we do Y", answer it and ask if they want the solution implemented.
 - Wait for the user to say something like "lets implement this" or something imperative like this. "Can you do it?" is NOT an imperative.
 - When working with litegraph.js, always use the available documentation tools (context7) to look up API usage, integration patterns, and best practices as needed. Prefer referencing up-to-date docs and code snippets over guessing or relying on memory.
+- WHY DO YOU KEEP DOING THINGS I DIDNT ASK YOU TO DO? WAIT FOR ME TO SAY TO DO SOMETHING! A QUESTION OR A CLARIFICATION IS NOT THE SAME AS TELLING YOU "GO DO IT"
+- WAIT FOR ME TO SAY "GO DO IT" OR "LET'S IMPLEMENT THIS" OR "YES DO IT" OR SOMETHING LIKE THAT
